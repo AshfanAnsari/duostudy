@@ -1,0 +1,372 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Playfair Display", Georgia, serif;
+  --font-body: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-num: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  --color-orchid: #8B5CF6;
+  --color-orchid-deep: #6D28D9;
+  --color-orchid-light: #DDD6FE;
+  --color-vermilion: #E03E2D;
+  --color-ink: #1A1126;
+  --color-ink-muted: #7E699B;
+  --color-paper: #F8F5FC;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: clip;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--color-ink);
+  background: #F4EFF9;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.01em;
+}
+
+::selection {
+  background: #DDD6FE;
+  color: #1A1126;
+}
+
+#root {
+  min-height: 100%;
+}
+
+/* ── Anti-Slop Orchid Wash (derived directly from Photo 4 & Photo 3) ───────── */
+.orchid-wash {
+  background:
+    radial-gradient(60% 45% at 90% -5%, rgba(192, 132, 252, 0.38), transparent 65%),
+    radial-gradient(45% 40% at 8% 5%, rgba(221, 214, 254, 0.45), transparent 60%),
+    radial-gradient(60% 55% at 50% 105%, rgba(216, 180, 254, 0.35), transparent 65%),
+    linear-gradient(165deg, #F8F5FC 0%, #EFE8F6 50%, #F5F0FB 100%);
+}
+
+.orchid-dark-wash {
+  background:
+    radial-gradient(60% 45% at 85% -5%, rgba(139, 92, 246, 0.32), transparent 65%),
+    radial-gradient(45% 40% at 10% 95%, rgba(168, 85, 247, 0.25), transparent 65%),
+    linear-gradient(170deg, #0C0814 0%, #130D20 50%, #0A0611 100%);
+}
+
+/* Backward-compatible alias for existing views */
+.rq-wash {
+  background:
+    radial-gradient(60% 45% at 90% -5%, rgba(192, 132, 252, 0.38), transparent 65%),
+    radial-gradient(45% 40% at 8% 5%, rgba(221, 214, 254, 0.45), transparent 60%),
+    radial-gradient(60% 55% at 50% 105%, rgba(216, 180, 254, 0.35), transparent 65%),
+    linear-gradient(165deg, #F8F5FC 0%, #EFE8F6 50%, #F5F0FB 100%);
+}
+
+/* ── Optical Frosted Glass (Anti-Slop: clean edges, no muddy blur) ──────────── */
+.glass {
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(24px) saturate(140%);
+  -webkit-backdrop-filter: blur(24px) saturate(140%);
+  box-shadow:
+    0 1px 2px rgba(26, 17, 38, 0.03),
+    0 20px 48px -12px rgba(76, 29, 149, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.98);
+}
+
+.glass-soft {
+  background: rgba(255, 255, 255, 0.58);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(18px) saturate(130%);
+  -webkit-backdrop-filter: blur(18px) saturate(130%);
+  box-shadow:
+    0 1px 2px rgba(26, 17, 38, 0.02),
+    0 12px 32px -8px rgba(76, 29, 149, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.98);
+}
+
+.rq-panel {
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 28px;
+  box-shadow:
+    0 1px 2px rgba(26, 17, 38, 0.03),
+    0 20px 45px -12px rgba(76, 29, 149, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.98);
+  -webkit-backdrop-filter: blur(22px) saturate(140%);
+  backdrop-filter: blur(22px) saturate(140%);
+}
+
+.field {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 14px;
+  padding: 12px 16px;
+  font-weight: 500;
+  font-size: 14.5px;
+  color: #1A1126;
+  outline: none;
+  box-shadow: 0 1px 2px rgba(26, 17, 38, 0.03), inset 0 1px 2px rgba(26, 17, 38, 0.03);
+  transition: border-color .15s ease, background-color .15s ease, box-shadow .15s ease;
+}
+
+.field::placeholder {
+  color: #9D8EAD;
+  font-weight: 500;
+}
+
+.field:focus {
+  border-color: #8B5CF6;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+}
+
+/* ── Anti-Slop Signature Vermilion Start Button (from Photo 3) ──────────────── */
+.btn-vermilion {
+  background: linear-gradient(175deg, #E74C3C 0%, #D63031 100%);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 9999px;
+  box-shadow: 0 12px 28px -4px rgba(214, 48, 49, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  font-family: var(--font-body);
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform .15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow .15s ease, filter .15s ease;
+}
+
+.btn-vermilion:hover {
+  filter: brightness(1.05);
+  transform: translateY(-1.5px);
+  box-shadow: 0 16px 36px -4px rgba(214, 48, 49, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.btn-vermilion:active {
+  transform: scale(0.97);
+}
+
+.rq-rosebtn {
+  background: linear-gradient(175deg, #E74C3C 0%, #D63031 100%);
+  color: #FFFFFF;
+  border-radius: 9999px;
+  box-shadow: 0 10px 24px -4px rgba(214, 48, 49, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  font-family: var(--font-body);
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform .15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow .15s ease, filter .15s ease;
+}
+
+.rq-rosebtn:hover {
+  filter: brightness(1.04);
+  transform: translateY(-1px);
+  box-shadow: 0 14px 30px -4px rgba(214, 48, 49, 0.5);
+}
+
+.btn-plum {
+  background: linear-gradient(180deg, #2A1B3D 0%, #1A1126 100%);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 14px;
+  box-shadow: 0 8px 20px -6px rgba(26, 17, 38, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform .15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow .15s ease, filter .15s ease;
+}
+
+.btn-plum:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.08);
+  box-shadow: 0 12px 26px -6px rgba(26, 17, 38, 0.45);
+}
+
+.rq-eyebrow {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #7E699B;
+}
+
+.rq-stat-label {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #7E699B;
+}
+
+.rq-tag {
+  font-family: var(--font-body);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #6D28D9;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 5px 9px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 1px 3px rgba(76, 29, 149, 0.05);
+}
+
+.rq-track {
+  position: relative;
+  height: 8px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: inset 0 1px 2px rgba(26, 17, 38, 0.06);
+}
+
+.rq-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, #F59E0B, #E03E2D);
+  box-shadow: 0 1px 6px rgba(224, 62, 45, 0.4);
+}
+
+.rq-knob {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(26, 17, 38, 0.18), inset 0 0 0 2px rgba(255, 255, 255, 0.95);
+}
+
+.rq-bar {
+  height: 6px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.75);
+  overflow: hidden;
+  box-shadow: inset 0 1px 2px rgba(26, 17, 38, 0.05);
+}
+
+.rq-bar > i {
+  display: block;
+  height: 100%;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, #8B5CF6, #E03E2D);
+}
+
+.rq-toggle {
+  display: flex;
+  gap: 3px;
+  padding: 4px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 2px 6px -2px rgba(26, 17, 38, 0.05);
+}
+
+.rq-toggle button {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 12.5px;
+  padding: 6px 18px;
+  border-radius: 9999px;
+  background: transparent;
+  color: #7E699B;
+  cursor: pointer;
+  transition: all .18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.rq-toggle button.on {
+  background: linear-gradient(175deg, #E74C3C 0%, #D63031 100%);
+  color: #FFF7FA;
+  box-shadow: 0 4px 14px -3px rgba(214, 48, 49, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+
+/* ── 21st.dev Animations & 3D Helpers ────────────────────────────────────────── */
+@keyframes border-beam {
+  0% {
+    offset-distance: 0%;
+  }
+  100% {
+    offset-distance: 100%;
+  }
+}
+
+.animate-border-beam {
+  animation: border-beam var(--duration) infinite linear;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+/* keyboard focus */
+:focus-visible {
+  outline: 2.5px solid #8B5CF6;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+/* ── SERRA Sanctuary Utilities & Typography ───────────────────────────────── */
+:root {
+  --ease-serra: cubic-bezier(.22, 1, .36, 1);
+}
+
+.font-sans-serra {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.font-serif-serra {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+}
+
+.serra-gradient-overlay {
+  background: linear-gradient(
+    180deg,
+    rgba(10, 7, 5, 0.4) 0%,
+    transparent 23%,
+    transparent 45%,
+    rgba(12, 8, 5, 0.24) 66%,
+    rgba(12, 8, 5, 0.76) 100%
+  );
+}
+
+.serra-menu-bg {
+  background:
+    radial-gradient(ellipse at 0% 100%, #594133 0%, transparent 65%),
+    #251e19;
+}
+
+.serra-skip-link {
+  position: fixed;
+  top: 14px;
+  left: 20px;
+  z-index: 1000;
+  background: #fffdf8;
+  color: #100d0a;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 9999px;
+  text-decoration: none;
+  transform: translateY(-160%);
+  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.serra-skip-link:focus {
+  transform: translateY(0);
+}
