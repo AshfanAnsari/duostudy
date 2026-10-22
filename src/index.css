@@ -20,6 +20,28 @@ html, body {
   overflow-x: clip;
 }
 
+@layer base {
+  /* Kill Android Chrome font boosting — inflated text stretches tiles off-screen */
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+  /* Grid items must be allowed to shrink below their content size, otherwise
+     one long label or chapter name stretches the whole tile off-screen.
+     (Flex children are NOT covered: their min-content floor is what makes
+     flex-wrap rows break onto the next line instead of crushing the text.)
+     Utilities (min-w-*) still win over this base rule. */
+  .grid > * {
+    min-width: 0;
+  }
+  img, svg, video, canvas {
+    max-width: 100%;
+  }
+  body {
+    overflow-wrap: break-word;
+  }
+}
+
 body {
   font-family: var(--font-body);
   color: var(--color-ink);
