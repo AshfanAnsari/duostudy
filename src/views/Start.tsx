@@ -30,7 +30,7 @@ export default function StartPage({ onStart }: { onStart: () => void }) {
         <div className="relative overflow-hidden rounded-[36px] border border-white/95 bg-white/85 p-6 sm:p-9 backdrop-blur-2xl shadow-[0_24px_64px_-16px_rgba(76,29,149,0.12)] transition-shadow duration-300 hover:shadow-[0_30px_72px_-16px_rgba(76,29,149,0.18)]">
           <BorderBeam size={260} duration={14} colorFrom="#8B5CF6" colorTo="#E03E2D" borderWidth={1.5} />
 
-          <div className="grid items-center gap-8 md:grid-cols-[1fr_1.1fr]">
+          <div className="grid grid-cols-1 items-center gap-8 md:grid-cols-[1fr_1.1fr]">
             {/* Left Column: Mascot Photo with Rounded Corners */}
             <div className="relative">
               <div className="relative aspect-[4/3.6] w-full overflow-hidden rounded-[26px] border border-white/90 bg-[#170E24] shadow-[0_16px_36px_-10px_rgba(26,17,38,0.18)]">

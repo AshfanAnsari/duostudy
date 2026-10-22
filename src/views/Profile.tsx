@@ -93,7 +93,7 @@ export default function Profile({
         </p>
       </div>
 
-      <div className="mt-7 grid gap-6 md:grid-cols-2">
+      <div className="mt-7 grid grid-cols-1 gap-6 md:grid-cols-2">
         {/* Your Profile Card */}
         <section className="rq-panel p-6">
           <div className="flex items-center gap-4">
@@ -312,7 +312,7 @@ export default function Profile({
       </div>
 
       {/* Target Exam Date & Study Sound Design */}
-      <div className="mt-6 grid gap-6 md:grid-cols-2">
+      <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
         {/* Exam Timeline */}
         <section className="rq-panel p-6">
           <div className="rq-eyebrow">NEET TARGET TIMELINE</div>

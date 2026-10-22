@@ -220,7 +220,7 @@ export default function Home({
             className="w-full"
           >
             {/* Countdown + Rings: Wrapped in 3D Perspective Tilt Panels */}
-            <div className="mt-6 grid gap-5 lg:grid-cols-[1.22fr_1fr]">
+            <div className="mt-6 grid grid-cols-1 gap-5 lg:grid-cols-[1.22fr_1fr]">
           <Card3D maxTilt={5} scale={1.01} className="rounded-[28px]">
             <section className="rq-panel h-full px-7 py-6 flex flex-col justify-between">
               <div>
@@ -394,7 +394,7 @@ export default function Home({
             </div>
           </div>
 
-          <div className="mt-6 grid gap-6 md:grid-cols-[1.25fr_1fr] items-center">
+          <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-[1.25fr_1fr] items-center">
             {/* Left: Stopwatch Display & Main Button */}
             <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
               <div className="text-center sm:text-left">
@@ -573,7 +573,7 @@ export default function Home({
         </div>
 
         {/* Due Today + Subjects: Elevated Glass Panels */}
-        <div className="mt-5 grid items-stretch gap-5 lg:grid-cols-[1.22fr_1fr]">
+        <div className="mt-5 grid grid-cols-1 items-stretch gap-5 lg:grid-cols-[1.22fr_1fr]">
           <section className="rq-panel h-full px-7 py-6">
             <div className="flex flex-wrap items-center gap-3">
               <h2 className="font-display text-[22px] font-bold text-[#241830]">
@@ -618,7 +618,7 @@ export default function Home({
                         <button
                           type="button"
                           onClick={() => setOpenId(open ? null : id)}
-                          className="block w-full cursor-pointer truncate text-left text-[14.5px] font-semibold text-[#241830]"
+                          className="block w-full cursor-pointer text-left text-[14.5px] font-semibold leading-snug text-[#241830]"
                           aria-expanded={open}
                           title="See subtopics"
                         >

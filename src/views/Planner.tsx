@@ -590,7 +590,7 @@ export default function Planner({
             </div>
 
             {/* Grid: Timer / Co-Working & Today Tasks */}
-            <div className="grid gap-6 lg:grid-cols-[1fr_1.3fr]">
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_1.3fr]">
               {/* Left Column: Pomodoro & Partner Co-study */}
               <div className="flex flex-col gap-6">
                 {/* Co-working Timer Panel */}
@@ -752,18 +752,18 @@ export default function Planner({
                           style={{ boxShadow: '0 4px 12px rgba(71,28,43,0.04)' }}
                         >
                           <div className="flex items-center gap-3">
-                            <span className="rq-tag flex-none">{c.subject.toUpperCase()}</span>
+                            <span className="rq-tag flex-none max-sm:hidden">{c.subject.toUpperCase()}</span>
                             <div className="min-w-0 flex-1">
                               <button
                                 type="button"
                                 onClick={() => setOpenId(open ? null : id)}
-                                className="block w-full cursor-pointer truncate text-left font-display text-[16px] font-bold hover:underline"
+                                className="block w-full cursor-pointer text-left font-display text-[16px] font-bold leading-snug hover:underline"
                               >
                                 <span className={isDone ? 'line-through opacity-50' : ''}>{c.name}</span>
                               </button>
                               <div className="flex items-center gap-2 mt-0.5">
                                 <span className="text-[11px] font-bold text-mauve-2">
-                                  {c.group} · {topicCount(id)} Topics
+                                  <span className="sm:hidden">{c.subject.toUpperCase()} · </span>{c.group} · {topicCount(id)} Topics
                                 </span>
                                 {compStage >= 2 ? (
                                   <span className="rounded-md bg-purple-100 px-1.5 py-0.2 font-sans text-[10px] font-black text-purple-700">
@@ -1062,7 +1062,7 @@ export default function Planner({
                     </div>
 
                     {/* Chapters Grid */}
-                    <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                    <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
                       {chapters.map((c) => {
                         const compStage = data.completions[c.id] ?? 0;
                         const isDone = compStage >= 1;
@@ -1187,7 +1187,7 @@ export default function Planner({
             className="w-full mt-6"
           >
             {/* Roadmap Metric Dashboard */}
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
               <div className="rq-panel p-5">
                 <div className="rq-eyebrow">NEET EXAM COUNTDOWN</div>
                 <div className="mt-2 flex items-baseline gap-2">
@@ -1341,7 +1341,7 @@ export default function Planner({
                         </span>
                       </div>
 
-                      <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                      <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
                         <div className="rounded-2xl border border-rose-200/60 bg-white/80 p-3.5">
                           <div className="text-[12px] font-extrabold text-[#241830]">📝 Full-Length Mock Test</div>
                           <div className="mt-1 text-[11px] font-medium text-[#7E699B]">
@@ -1433,7 +1433,7 @@ export default function Planner({
                       </div>
                     </div>
 
-                    <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                    <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
                       {chapters.map((c) => {
                         const compStage = data.completions[c.id] ?? 0;
                         const isDone = compStage >= 1;
@@ -1526,7 +1526,7 @@ export default function Planner({
             className="w-full mt-6"
           >
             {/* Top Stat Banner */}
-            <div className="grid gap-4 sm:grid-cols-3 mb-6">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 mb-6">
               <div className="rq-panel p-5">
                 <div className="rq-eyebrow">TOTAL TESTS COMPLETED</div>
                 <div className="mt-2 flex items-baseline gap-2">
@@ -1581,7 +1581,7 @@ export default function Planner({
                 )}
 
                 <form onSubmit={handleCreateTest} className="mt-4 space-y-4">
-                  <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div>
                       <label className="block text-[12px] font-bold text-[#241830] mb-1">Test Title</label>
                       <input
@@ -1606,7 +1606,7 @@ export default function Planner({
                     </div>
                   </div>
 
-                  <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div>
                       <label className="block text-[12px] font-bold text-[#241830] mb-1">Duration</label>
                       <input

@@ -145,7 +145,7 @@ export default function Subject({
       </div>
 
       {/* Chapter List */}
-      <div className="mt-5 grid gap-3">
+      <div className="mt-5 grid grid-cols-1 gap-3">
         <AnimatePresence mode="popLayout">
           {filteredChapters.map((c, idx) => {
             const stage = data.completions[c.id] ?? 0;
@@ -164,7 +164,7 @@ export default function Subject({
                   background: stage >= 2 ? 'rgba(255, 255, 255, 0.82)' : 'rgba(255, 255, 255, 0.6)',
                 }}
               >
-                <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
                       <span className="font-num text-[10.5px] font-semibold tracking-[0.14em]" style={{ color: MUTED }}>
@@ -179,7 +179,7 @@ export default function Subject({
                     <button
                       type="button"
                       onClick={() => setOpenId(open ? null : c.id)}
-                      className="mt-0.5 block w-full cursor-pointer truncate text-left font-display text-[19px] font-bold hover:underline"
+                      className="mt-0.5 block w-full cursor-pointer text-left font-display text-[19px] font-bold leading-snug hover:underline"
                     >
                       {c.name}
                     </button>

@@ -8,8 +8,8 @@ function RevRow({ c }: { c: Chapter }) {
   const [open, setOpen] = useState(false);
   return (
     <div className="text-[14.5px] font-bold">
-      <div className="flex items-baseline gap-2">
-        <button type="button" onClick={() => setOpen(!open)} className="min-w-0 flex-1 cursor-pointer truncate text-left" aria-expanded={open} title="See subtopics">{c.name}</button>
+      <div className="flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:gap-2">
+        <button type="button" onClick={() => setOpen(!open)} className="min-w-0 flex-1 cursor-pointer text-left leading-snug" aria-expanded={open} title="See subtopics">{c.name}</button>
         <span className="flex-none text-[11px] font-black tracking-wide text-mauve-2">{c.subject.toUpperCase()} · {topicCount(c.id)} TOPICS</span>
       </div>
       {open && <TopicsChips id={c.id} />}
@@ -21,7 +21,7 @@ function RevList({ title, items, empty }: { title: string; items: Chapter[]; emp
   return (
     <div className="glass-soft flex-1 rounded-3xl p-6 shadow-sm">
       <h3 className="font-display text-[20px] font-bold text-[#241830]">{title}</h3>
-      <div className="mt-3.5 grid gap-2">
+      <div className="mt-3.5 grid grid-cols-1 gap-2">
         {items.length === 0 && <p className="text-[13.5px] font-medium text-[#8C6C82]">{empty}</p>}
         {items.map((c) => <RevRow key={c.id} c={c} />)}
       </div>
@@ -52,7 +52,7 @@ export function Stats({ data }: { data: UserData }) {
       <div className="glass-soft mt-7 rounded-3xl p-6 shadow-sm">
         <h3 className="font-display text-[20px] font-bold text-[#241830]">Daily history</h3>
         {days.length === 0 && <p className="mt-2 text-[13.5px] font-medium text-[#8C6C82]">Your day-by-day percentages will collect here.</p>}
-        <div className="mt-3.5 grid gap-2.5">
+        <div className="mt-3.5 grid grid-cols-1 gap-2.5">
           {days.map(([d, v]) => {
             const pct = v.total ? Math.round((v.done / v.total) * 100) : 0;
             return (
@@ -89,7 +89,7 @@ export function ChapterList({ me, data, kind, viewUser }: { me: string; data: Us
       <div className="text-[11px] font-black tracking-[0.26em] text-mauve-2">{items.length} CHAPTERS</div>
       <h1 className="mt-1 font-display text-[44px] font-extrabold leading-none">{titles[kind][0]}</h1>
       <p className="mt-2 text-[14.5px] font-bold text-mauve">{titles[kind][1]}.</p>
-      <div className="mt-6 grid gap-3">
+      <div className="mt-6 grid grid-cols-1 gap-3">
         {groups.map(({ s, list }) => {
           const open = openSubjects.has(s);
           return (
@@ -102,12 +102,12 @@ export function ChapterList({ me, data, kind, viewUser }: { me: string; data: Us
                 <span aria-hidden className={`flex-none text-[15px] font-black text-mauve-2 transition-transform duration-300 ${open ? 'rotate-180' : ''}`}>▾</span>
               </button>
               {open && (
-                <div className="grid gap-2 px-3 pb-3 sm:grid-cols-2">
+                <div className="grid grid-cols-1 gap-2 px-3 pb-3 sm:grid-cols-2">
                   {list.map((c) => (
                     <div key={c.id} className="rounded-[14px] bg-white/55 px-4 py-3">
                       <div className="flex items-center gap-3">
                         <div className="min-w-0 flex-1">
-                          <button type="button" onClick={() => setOpenId(openId === c.id ? null : c.id)} className="block w-full cursor-pointer truncate text-left text-[15px] font-black" aria-expanded={openId === c.id} title="See subtopics">{c.name}</button>
+                          <button type="button" onClick={() => setOpenId(openId === c.id ? null : c.id)} className="block w-full cursor-pointer text-left text-[15px] font-black leading-snug" aria-expanded={openId === c.id} title="See subtopics">{c.name}</button>
                           <div className="text-[11px] font-extrabold tracking-wide text-mauve-2">{c.group.toUpperCase()} · {topicCount(c.id)} TOPICS</div>
                         </div>
                         {!readOnly && (todays.includes(c.id)
