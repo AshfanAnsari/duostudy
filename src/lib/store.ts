@@ -150,6 +150,91 @@ interface StoreState {
 
 const STORAGE_KEY = 'duostudy_state_v4';
 
+const TIMER_VAULT_KEY = 'duostudy-timer-v1';
+
+interface TimerVaultRecord {
+  activeTimer?: UserData['activeTimer'];
+  dailyStudySeconds?: Record<string, number>;
+  timerMinutes?: number;
+  savedAt?: number;
+}
+
+function readTimerVault(): Record<string, TimerVaultRecord> {
+  try {
+    return JSON.parse(localStorage.getItem(TIMER_VAULT_KEY) || '{}');
+  } catch (e) {
+    return {};
+  }
+}
+
+/* The timer vault is a tiny standalone record written synchronously on
+   every store change. Restoring it here — at state creation, in every
+   mode (local, signed-in, fresh) — means a running timer comes back even
+   if the main state record was lost, trimmed, or replaced on load. It
+   keeps counting from its original startedAt until the user stops it. */
+function applyTimerVault(state: StoreState) {
+  let vault: Record<string, TimerVaultRecord>;
+  try {
+    vault = readTimerVault();
+  } catch (e) {
+    return;
+  }
+  for (const [username, rec] of Object.entries(vault)) {
+    if (!rec) continue;
+    if (!state.userData[username]) {
+      if (username !== state.currentUsername) continue;
+      state.userData[username] = createFreshUserData();
+    }
+    const d = state.userData[username];
+    if (rec.dailyStudySeconds) {
+      if (!d.dailyStudySeconds) d.dailyStudySeconds = {};
+      for (const [k, v] of Object.entries(rec.dailyStudySeconds)) {
+        d.dailyStudySeconds[k] = Math.max(d.dailyStudySeconds[k] ?? 0, v as number);
+      }
+    }
+    if (typeof rec.timerMinutes === 'number') {
+      d.timerMinutes = Math.max(d.timerMinutes ?? 0, rec.timerMinutes);
+    }
+    if (rec.activeTimer?.isRunning && rec.activeTimer.startedAt > 0) {
+      if (!d.activeTimer?.isRunning || d.activeTimer.startedAt !== rec.activeTimer.startedAt) {
+        d.activeTimer = rec.activeTimer;
+      }
+    } else if (!d.activeTimer && rec.activeTimer) {
+      d.activeTimer = rec.activeTimer;
+    }
+  }
+
+  // Cross-key rescue: a timer started under a different local username
+  // (e.g. before sign-in switched the active desk) must not be stranded.
+  // If the active desk has no running timer, adopt any running one found.
+  const cur = state.currentUsername;
+  if (cur) {
+    const curData = state.userData[cur];
+    if (!curData?.activeTimer?.isRunning) {
+      let best: UserData['activeTimer'] | undefined;
+      for (const rec of Object.values(vault)) {
+        const t = rec?.activeTimer;
+        if (t?.isRunning && t.startedAt > 0 && (!best || t.startedAt > best.startedAt)) {
+          best = t;
+        }
+      }
+      if (!best) {
+        for (const d of Object.values(state.userData)) {
+          const t = d?.activeTimer;
+          if (t?.isRunning && t.startedAt > 0) {
+            best = t;
+            break;
+          }
+        }
+      }
+      if (best) {
+        if (!state.userData[cur]) state.userData[cur] = createFreshUserData();
+        state.userData[cur].activeTimer = best;
+      }
+    }
+  }
+}
+
 function getInitialState(): StoreState {
   const initialAccounts: Record<string, Account> = {
     ashfan: {
@@ -176,17 +261,19 @@ function getInitialState(): StoreState {
       const parsed = JSON.parse(saved);
       const accs = { ...initialAccounts, ...(parsed.accounts || {}) };
       const curUser = parsed.currentUsername || 'ashfan';
-      return {
+      const restored: StoreState = {
         ...parsed,
         accounts: accs,
         currentUsername: curUser,
         ready: true,
         version: 0,
       };
+      applyTimerVault(restored);
+      return restored;
     }
   } catch (e) {}
 
-  return {
+  const fresh: StoreState = {
     ready: true,
     version: 0,
     currentUsername: 'ashfan',
@@ -194,6 +281,8 @@ function getInitialState(): StoreState {
     userData: {},
     wallMessages: [],
   };
+  applyTimerVault(fresh);
+  return fresh;
 }
 
 class DuoStore {
@@ -462,9 +551,17 @@ class DuoStore {
       const prev = this.state.userData[meUsername];
       const vault = this.timerVaultOf(meUsername);
       const remoteTimer = (myData as any).active_timer as UserData['activeTimer'] | undefined;
-      const timerCandidates = [remoteTimer, vault?.activeTimer, prev?.activeTimer].filter(
-        Boolean,
-      ) as NonNullable<UserData['activeTimer']>[];
+      // Include vault records from any local username: a timer started in
+      // local mode before sign-in must follow the user onto their desk.
+      const anyVaultTimers = Object.values(readTimerVault())
+        .map((r) => r?.activeTimer)
+        .filter(Boolean) as NonNullable<UserData['activeTimer']>[];
+      const timerCandidates = [
+        remoteTimer,
+        vault?.activeTimer,
+        prev?.activeTimer,
+        ...anyVaultTimers,
+      ].filter(Boolean) as NonNullable<UserData['activeTimer']>[];
       const runningTimer = timerCandidates
         .filter((c) => c.isRunning && c.startedAt > 0)
         .sort((a, b) => b.startedAt - a.startedAt)[0];
@@ -499,8 +596,28 @@ class DuoStore {
       };
       this.saveTimerVault(meUsername);
     } else {
-      // Create initial row in user_data if missing
+      // Create initial row in user_data if missing — but never wipe a
+      // timer that is already running locally.
       const initData = createFreshUserData();
+      const prevData = this.state.userData[meUsername];
+      const vault = this.timerVaultOf(meUsername);
+      if (prevData?.activeTimer) initData.activeTimer = prevData.activeTimer;
+      if (prevData?.dailyStudySeconds) initData.dailyStudySeconds = prevData.dailyStudySeconds;
+      if (prevData?.timerMinutes) initData.timerMinutes = prevData.timerMinutes;
+      if (vault?.activeTimer?.isRunning && vault.activeTimer.startedAt > 0) {
+        initData.activeTimer = vault.activeTimer;
+        if (vault.dailyStudySeconds) initData.dailyStudySeconds = vault.dailyStudySeconds;
+        if (typeof vault.timerMinutes === 'number') initData.timerMinutes = vault.timerMinutes;
+      }
+      if (!initData.activeTimer?.isRunning) {
+        for (const rec of Object.values(readTimerVault())) {
+          const t = rec?.activeTimer;
+          if (t?.isRunning && t.startedAt > 0) {
+            initData.activeTimer = t;
+            break;
+          }
+        }
+      }
       this.state.userData[meUsername] = initData;
       try {
         await supabase.from('user_data').insert({
@@ -600,7 +717,20 @@ class DuoStore {
   private persist() {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state));
-    } catch (e) {}
+    } catch (e) {
+      // A failed write (e.g. storage quota) must not silently kill all
+      // persistence — retry with a trimmed wall history in the stored
+      // copy only; the in-memory state keeps everything.
+      try {
+        const trimmed = {
+          ...this.state,
+          wallMessages: (this.state.wallMessages || []).slice(0, 50),
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(trimmed));
+      } catch (e2) {
+        console.warn('DuoStudy persist failed:', e2);
+      }
+    }
   }
 
   /* ── Timer vault ────────────────────────────────────────────────────────────
@@ -649,6 +779,9 @@ class DuoStore {
       version: (this.state.version || 0) + 1,
     };
     this.persist();
+    // Keep the standalone timer vault in step with every change, so the
+    // timer can be restored on load even if the main record is unusable.
+    if (this.state.currentUsername) this.saveTimerVault(this.state.currentUsername);
 
     if (broadcast && this.broadcastChannel) {
       try {
