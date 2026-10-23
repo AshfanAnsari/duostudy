@@ -260,7 +260,11 @@ function getInitialState(): StoreState {
     if (saved) {
       const parsed = JSON.parse(saved);
       const accs = { ...initialAccounts, ...(parsed.accounts || {}) };
-      const curUser = parsed.currentUsername || 'ashfan';
+      // An explicit null means the user signed out — respect it, so the
+      // sign-out sticks across reloads and the login page gates the app.
+      // Older saves without the key keep the historical default.
+      const curUser =
+        parsed.currentUsername === null ? null : parsed.currentUsername || 'ashfan';
       const restored: StoreState = {
         ...parsed,
         accounts: accs,
@@ -276,7 +280,9 @@ function getInitialState(): StoreState {
   const fresh: StoreState = {
     ready: true,
     version: 0,
-    currentUsername: 'ashfan',
+    // Brand-new visitors start signed out: the login page comes first.
+    // The seeded local accounts remain available for local sign-in.
+    currentUsername: null,
     accounts: initialAccounts,
     userData: {},
     wallMessages: [],
