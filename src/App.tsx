@@ -3,7 +3,6 @@ import { motion, AnimatePresence, MotionConfig } from 'motion/react';
 import { store } from './lib/store';
 import { sound } from './lib/audio';
 import { KineticLoader, SearchModal } from './components/ui';
-import StartPage from './views/Start';
 import Auth from './views/Auth';
 import Home from './views/Home';
 import Subject from './views/Subject';
@@ -17,7 +16,7 @@ import Dock, { type View } from './components/Dock';
 function Shell() {
   useSyncExternalStore(store.subscribe, store.getSnapshot);
   const me = store.me();
-  const [screen, setScreen] = useState<'start' | 'auth' | 'app'>('start');
+  const [screen, setScreen] = useState<'auth' | 'app'>(() => (store.me() ? 'app' : 'auth'));
   const [booted, setBooted] = useState(false);
   const [view, setView] = useState<View>('home');
   const [viewUser, setViewUser] = useState<string | null>(null);
@@ -26,7 +25,7 @@ function Shell() {
   useEffect(() => {
     if (store.ready && !booted) {
       setBooted(true);
-      setScreen(store.me() ? 'app' : 'start');
+      setScreen(store.me() ? 'app' : 'auth');
     }
   }, [booted, store.ready]);
 
@@ -49,17 +48,6 @@ function Shell() {
   }, []);
 
   if (!store.ready) return <KineticLoader text="Loading DuoStudy..." />;
-
-  if (screen === 'start') {
-    return (
-      <StartPage
-        onStart={() => {
-          store.ensureActiveAccount('ashfan');
-          setScreen('app');
-        }}
-      />
-    );
-  }
 
   if (screen === 'auth' || !me) {
     return (
@@ -189,7 +177,7 @@ function Shell() {
               store.signout();
               setViewUser(null);
               setView('home');
-              setScreen('start');
+              setScreen('auth');
             }}
           />
         )}
