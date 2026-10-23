@@ -419,7 +419,17 @@ class DuoStore {
               dayLog: partnerData.day_log || {},
               planStart: partnerData.plan_start || todayISO(),
               queueStart: partnerData.queue_start || todayISO(),
-              timerMinutes: 0,
+              timerMinutes:
+                typeof (partnerData as any).timer_minutes === 'number'
+                  ? (partnerData as any).timer_minutes
+                  : 0,
+              dailyStudySeconds: (partnerData as any).daily_study_seconds || {},
+              activeTimer:
+                (partnerData as any).active_timer &&
+                typeof (partnerData as any).active_timer === 'object' &&
+                Object.keys((partnerData as any).active_timer).length > 0
+                  ? (partnerData as any).active_timer
+                  : { isRunning: false, startedAt: 0, accumulatedSeconds: 0 },
               currentActivity: 'Studying for NEET UG',
             };
           }
@@ -446,6 +456,28 @@ class DuoStore {
       .maybeSingle();
 
     if (myData) {
+      // Timer state is merged, never overwritten: a running timer started
+      // before the tab was closed must still be running after this load,
+      // counting from its original startedAt until the user stops it here.
+      const prev = this.state.userData[meUsername];
+      const vault = this.timerVaultOf(meUsername);
+      const remoteTimer = (myData as any).active_timer as UserData['activeTimer'] | undefined;
+      const timerCandidates = [remoteTimer, vault?.activeTimer, prev?.activeTimer].filter(
+        Boolean,
+      ) as NonNullable<UserData['activeTimer']>[];
+      const runningTimer = timerCandidates
+        .filter((c) => c.isRunning && c.startedAt > 0)
+        .sort((a, b) => b.startedAt - a.startedAt)[0];
+      const mergedDaily: Record<string, number> = {
+        ...(((myData as any).daily_study_seconds as Record<string, number>) ?? {}),
+      };
+      for (const src of [prev?.dailyStudySeconds, vault?.dailyStudySeconds]) {
+        if (src) {
+          for (const [k, v] of Object.entries(src)) {
+            mergedDaily[k] = Math.max(mergedDaily[k] ?? 0, v as number);
+          }
+        }
+      }
       this.state.userData[meUsername] = {
         completions: myData.completions || {},
         todayAdds: myData.today_adds || {},
@@ -454,9 +486,18 @@ class DuoStore {
         dayLog: myData.day_log || {},
         planStart: myData.plan_start || todayISO(),
         queueStart: myData.queue_start || todayISO(),
-        timerMinutes: this.state.userData[meUsername]?.timerMinutes || 0,
+        timerMinutes: Math.max(
+          typeof (myData as any).timer_minutes === 'number' ? (myData as any).timer_minutes : 0,
+          prev?.timerMinutes ?? 0,
+          vault?.timerMinutes ?? 0,
+        ),
+        dailyStudySeconds: mergedDaily,
+        activeTimer:
+          runningTimer ??
+          timerCandidates[0] ?? { isRunning: false, startedAt: 0, accumulatedSeconds: 0 },
         currentActivity: this.state.userData[meUsername]?.currentActivity || 'Studying for NEET UG',
       };
+      this.saveTimerVault(meUsername);
     } else {
       // Create initial row in user_data if missing
       const initData = createFreshUserData();
@@ -560,6 +601,44 @@ class DuoStore {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state));
     } catch (e) {}
+  }
+
+  /* ── Timer vault ────────────────────────────────────────────────────────────
+     The study timer must survive the tab being closed/removed and a full
+     reload: it keeps counting from `startedAt` until the user comes back
+     and stops it. Supabase hydration replaces userData wholesale and the
+     user_data table historically had no timer columns, which wiped the
+     running timer on every load. The vault is a small dedicated
+     localStorage record (outside `state`) that hydration merges back in. */
+  private TIMER_KEY = 'duostudy-timer-v1';
+
+  private saveTimerVault(username: string) {
+    try {
+      const d = this.state.userData[username];
+      if (!d) return;
+      const all = JSON.parse(localStorage.getItem(this.TIMER_KEY) || '{}');
+      all[username] = {
+        activeTimer: d.activeTimer ?? { isRunning: false, startedAt: 0, accumulatedSeconds: 0 },
+        dailyStudySeconds: d.dailyStudySeconds ?? {},
+        timerMinutes: d.timerMinutes ?? 0,
+        savedAt: Date.now(),
+      };
+      localStorage.setItem(this.TIMER_KEY, JSON.stringify(all));
+    } catch (e) {}
+  }
+
+  private timerVaultOf(username: string): {
+    activeTimer?: UserData['activeTimer'];
+    dailyStudySeconds?: Record<string, number>;
+    timerMinutes?: number;
+    savedAt?: number;
+  } | null {
+    try {
+      const all = JSON.parse(localStorage.getItem(this.TIMER_KEY) || '{}');
+      return all[username] ?? null;
+    } catch (e) {
+      return null;
+    }
   }
 
   private notify(broadcast = true) {
@@ -698,6 +777,9 @@ class DuoStore {
 
   // ── Synced actions ────────────────────────────────────────────────────────
   public async syncUserDataToSupabase(username: string) {
+    // Vault first: localStorage is synchronous, so the timer record lands
+    // even if the tab is killed before the network sync below completes.
+    this.saveTimerVault(username);
     if (!supabase || !this.currentUserId) return;
     const me = this.me();
     if (!me || me.username !== username) return;
@@ -719,6 +801,19 @@ class DuoStore {
     } catch (e) {
       console.warn('Sync user data notice:', e);
     }
+
+    // Timer fields sync in a separate call: if the timer columns are not
+    // in the table yet, only this call fails — the core sync above is safe.
+    try {
+      await supabase
+        .from('user_data')
+        .update({
+          daily_study_seconds: data.dailyStudySeconds ?? {},
+          active_timer: data.activeTimer ?? {},
+          timer_minutes: data.timerMinutes ?? 0,
+        })
+        .eq('user_id', this.currentUserId);
+    } catch (e) {}
   }
 
   public toggleDone(username: string, chapterId: string, dateStr: string = todayISO()) {
