@@ -60,13 +60,21 @@ body {
   min-height: 100%;
 }
 
-/* ── Anti-Slop Orchid Wash (derived directly from Photo 4 & Photo 3) ───────── */
+/* ── Liquid backdrop: a real room photo under an orchid veil ─────────────────
+   Liquid glass needs something with colour and edges behind it to bend.
+   The photo sits at the bottom; the veil keeps it quiet enough for text,
+   and every glass panel's backdrop-filter blurs/saturates this composite. */
 .orchid-wash {
-  background:
-    radial-gradient(60% 45% at 90% -5%, rgba(192, 132, 252, 0.38), transparent 65%),
-    radial-gradient(45% 40% at 8% 5%, rgba(221, 214, 254, 0.45), transparent 60%),
-    radial-gradient(60% 55% at 50% 105%, rgba(216, 180, 254, 0.35), transparent 65%),
-    linear-gradient(165deg, #F8F5FC 0%, #EFE8F6 50%, #F5F0FB 100%);
+  background-color: #EFE8F6;
+  background-image:
+    radial-gradient(60% 45% at 90% -5%, rgba(192, 132, 252, 0.42), transparent 65%),
+    radial-gradient(45% 40% at 8% 5%, rgba(221, 214, 254, 0.5), transparent 60%),
+    radial-gradient(60% 55% at 50% 105%, rgba(216, 180, 254, 0.4), transparent 65%),
+    linear-gradient(165deg, rgba(248, 245, 252, 0.88) 0%, rgba(239, 232, 246, 0.82) 50%, rgba(245, 240, 251, 0.9) 100%),
+    url("./assets/liquid-bg.jpg");
+  background-size: auto, auto, auto, auto, cover;
+  background-position: 0 0, 0 0, 0 0, 0 0, center;
+  background-repeat: no-repeat;
 }
 
 .orchid-dark-wash {
@@ -76,48 +84,74 @@ body {
     linear-gradient(170deg, #0C0814 0%, #130D20 50%, #0A0611 100%);
 }
 
-/* Backward-compatible alias for existing views */
+/* Backward-compatible alias for existing views — same liquid backdrop */
 .rq-wash {
-  background:
-    radial-gradient(60% 45% at 90% -5%, rgba(192, 132, 252, 0.38), transparent 65%),
-    radial-gradient(45% 40% at 8% 5%, rgba(221, 214, 254, 0.45), transparent 60%),
-    radial-gradient(60% 55% at 50% 105%, rgba(216, 180, 254, 0.35), transparent 65%),
-    linear-gradient(165deg, #F8F5FC 0%, #EFE8F6 50%, #F5F0FB 100%);
+  background-color: #EFE8F6;
+  background-image:
+    radial-gradient(60% 45% at 90% -5%, rgba(192, 132, 252, 0.42), transparent 65%),
+    radial-gradient(45% 40% at 8% 5%, rgba(221, 214, 254, 0.5), transparent 60%),
+    radial-gradient(60% 55% at 50% 105%, rgba(216, 180, 254, 0.4), transparent 65%),
+    linear-gradient(165deg, rgba(248, 245, 252, 0.88) 0%, rgba(239, 232, 246, 0.82) 50%, rgba(245, 240, 251, 0.9) 100%),
+    url("./assets/liquid-bg.jpg");
+  background-size: auto, auto, auto, auto, cover;
+  background-position: 0 0, 0 0, 0 0, 0 0, center;
+  background-repeat: no-repeat;
 }
 
-/* ── Optical Frosted Glass (Anti-Slop: clean edges, no muddy blur) ──────────── */
+/* ── Liquid Glass ─────────────────────────────────────────────────────────────
+   Three things make it read as liquid, not frosted:
+   1) a translucent tint (not near-opaque white) so the backdrop shows through,
+   2) backdrop blur + saturate(1.6) + brightness lift so colours bend through,
+   3) a specular light pool on top, a bright rim, and refractive brightening
+      at the lower edge (inset shadows + gradient layers).                    */
 .glass {
-  background: rgba(255, 255, 255, 0.72);
-  border: 1px solid rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(24px) saturate(140%);
-  -webkit-backdrop-filter: blur(24px) saturate(140%);
+  background:
+    radial-gradient(120% 90% at 20% 0%, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 55%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0.34) 48%, rgba(255, 255, 255, 0.44) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(22px) saturate(165%) brightness(1.06);
+  -webkit-backdrop-filter: blur(22px) saturate(165%) brightness(1.06);
   box-shadow:
     0 1px 2px rgba(26, 17, 38, 0.03),
-    0 20px 48px -12px rgba(76, 29, 149, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.98);
+    0 20px 48px -12px rgba(76, 29, 149, 0.14),
+    inset 0 1px 1px rgba(255, 255, 255, 0.95),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.35),
+    inset 1px 0 1px rgba(255, 255, 255, 0.3),
+    inset -1px 0 1px rgba(255, 255, 255, 0.2),
+    inset 0 -14px 24px -16px rgba(139, 92, 246, 0.18);
 }
 
 .glass-soft {
-  background: rgba(255, 255, 255, 0.58);
-  border: 1px solid rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(18px) saturate(130%);
-  -webkit-backdrop-filter: blur(18px) saturate(130%);
+  background:
+    radial-gradient(120% 90% at 20% 0%, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0) 55%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.46) 0%, rgba(255, 255, 255, 0.28) 48%, rgba(255, 255, 255, 0.38) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(18px) saturate(155%) brightness(1.05);
+  -webkit-backdrop-filter: blur(18px) saturate(155%) brightness(1.05);
   box-shadow:
     0 1px 2px rgba(26, 17, 38, 0.02),
-    0 12px 32px -8px rgba(76, 29, 149, 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 0.98);
+    0 12px 32px -8px rgba(76, 29, 149, 0.1),
+    inset 0 1px 1px rgba(255, 255, 255, 0.95),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.3),
+    inset 0 -12px 20px -14px rgba(139, 92, 246, 0.15);
 }
 
 .rq-panel {
-  background: rgba(255, 255, 255, 0.75);
-  border: 1px solid rgba(255, 255, 255, 0.9);
+  background:
+    radial-gradient(120% 90% at 20% 0%, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0) 55%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.62) 0%, rgba(255, 255, 255, 0.44) 48%, rgba(255, 255, 255, 0.52) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.88);
   border-radius: 28px;
   box-shadow:
     0 1px 2px rgba(26, 17, 38, 0.03),
-    0 20px 45px -12px rgba(76, 29, 149, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.98);
-  -webkit-backdrop-filter: blur(22px) saturate(140%);
-  backdrop-filter: blur(22px) saturate(140%);
+    0 20px 45px -12px rgba(76, 29, 149, 0.13),
+    inset 0 1px 1px rgba(255, 255, 255, 0.98),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.35),
+    inset 1px 0 1px rgba(255, 255, 255, 0.3),
+    inset -1px 0 1px rgba(255, 255, 255, 0.2),
+    inset 0 -14px 24px -16px rgba(139, 92, 246, 0.16);
+  -webkit-backdrop-filter: blur(24px) saturate(160%) brightness(1.05);
+  backdrop-filter: blur(24px) saturate(160%) brightness(1.05);
 }
 
 .field {
